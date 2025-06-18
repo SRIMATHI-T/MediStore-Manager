@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block title %}Discount Offers - Medicine Stock Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="display-5">
+        <i class="fas fa-tags me-2"></i>Discount Offers
+    </h1>
+</div>
+
+<div class="alert alert-info">
+    <i class="fas fa-info-circle me-2"></i>
+    <strong>Discount Policy:</strong> Medicines expiring within 15 days are eligible for discounts to minimize losses.
+    <ul class="mb-0 mt-2">
+        <li>5 days or less: 50% discount</li>
+        <li>6-10 days: 30% discount</li>
+        <li>11-15 days: 15% discount</li>
+    </ul>
+</div>
+
+{% if medicines %}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Quantity</th>
+                        <th>Expiry Date</th>
+                        <th>Days Left</th>
+                        <th>Original Price</th>
+                        <th>Discount</th>
+                        <th>Discounted Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for medicine in medicines %}
+                    <tr class="{% if medicine.days_left <= 5 %}table-danger{% elif medicine.days_left <= 10 %}table-warning{% else %}table-info{% endif %}">
+                        <td>{{ medicine.name }}</td>
+                        <td>{{ medicine.category or 'N/A' }}</td>
+                        <td>{{ medicine.quantity }} {{ medicine.unit or '' }}</td>
+                        <td>{{ medicine.expiry_date }}</td>
+                        <td>
+                            {% if medicine.days_left is defined %}
+                                {% if medicine.days_left <= 5 %}
+                                <span class="badge bg-danger">{{ medicine.days_left }} days</span>
+                                {% elif medicine.days_left <= 10 %}
+                                <span class="badge bg-warning text-dark">{{ medicine.days_left }} days</span>
+                                {% else %}
+                                <span class="badge bg-info text-dark">{{ medicine.days_left }} days</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="badge bg-secondary">Unknown</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if medicine.price %}
+                                ₹{{ medicine.price }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-success">{{ medicine.recommended_discount }}% OFF</span>
+                        </td>
+                        <td>
+                            {% if medicine.discounted_price %}
+                                <strong class="text-success">₹{{ medicine.discounted_price }}</strong>
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('edit_medicine', id=medicine.id) }}" class="btn btn-outline-primary" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{{ url_for('update_stock', id=medicine.id) }}" class="btn btn-outline-success" title="Update Stock">
+                                    <i class="fas fa-cubes"></i>
+                                </a>
+                                <button type="button" class="btn btn-outline-info" title="Print Discount Label" onclick="printDiscountLabel('{{ medicine.id }}', '{{ medicine.name }}', '{{ medicine.recommended_discount }}' , '{{ medicine.discounted_price|default(0) }}' )">
+                                    <i class="fas fa-print"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-success">
+    <i class="fas fa-check-circle me-2"></i>Great! No medicines are expiring within 15 days.
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function printDiscountLabel(id, name, discount, price) {
+        
+        const labelWindow = window.open('', 'Discount Label', 'width=400,height=300');
+        labelWindow.document.write(`
+            <html>
+            <head>
+                <title>Discount Label</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        padding: 20px;
+                        text-align: center;
+                    }
+                    .label {
+                        border: 2px dashed #333;
+                        padding: 15px;
+                        margin: 0 auto;
+                        max-width: 300px;
+                    }
+                    .product-name {
+                        font-size: 18px;
+                        font-weight: bold;
+                        margin-bottom: 10px;
+                    }
+                    .discount {
+                        font-size: 24px;
+                        color: red;
+                        font-weight: bold;
+                        margin: 10px 0;
+                    }
+                    .price {
+                        font-size: 20px;
+                        margin: 10px 0;
+                    }
+                    .expiry-note {
+                        font-size: 12px;
+                        color: #666;
+                        margin-top: 15px;
+                    }
+                    .print-btn {
+                        margin-top: 20px;
+                        padding: 8px 15px;
+                        background-color: #007bff;
+                        color: white;
+                        border: none;
+                        border-radius: 4px;
+                        cursor: pointer;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="label">
+                    <div class="product-name">${name}</div>
+                    <div class="discount">SPECIAL OFFER: ${discount}% OFF</div>
+                    <div class="price">New Price: ₹${price || 'N/A'}</div>
+                    <div class="expiry-note">*Limited time offer due to approaching expiry date</div>
+                </div>
+                <button class="print-btn" onclick="window.print(); window.close();">Print Label</button>
+            </body>
+            </html>
+        `);
+    }
+</script>
+{% endblock %}

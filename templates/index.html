@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Medicine Stock Management{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <h1 class="display-5 mb-4">
+            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+        </h1>
+    </div>
+</div>
+
+
+<div class="row mb-4">
+    <div class="col-md-4 mb-3">
+        <div class="card bg-info-primary h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">Total Medicines</h5>
+                        <h2 class="display-4">{{ total_medicines }}</h2>
+                    </div>
+                    <i class="fas fa-pills fa-3x"></i>
+                </div>
+            </div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <a href="{{ url_for('medicines') }}" class="text-white text-decoration-none">View Details</a>
+                <i class="fas fa-angle-right text-white"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card bg-info-medium h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">Expiring Soon</h5>
+                        <h2 class="display-4">{{ expiring_medicines }}</h2>
+                    </div>
+                    <i class="fas fa-calendar-times fa-3x"></i>
+                </div>
+            </div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <a href="{{ url_for('expiring') }}" class="text-dark text-decoration-none">View Details</a>
+                <i class="fas fa-angle-right text-dark"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card bg-info-light h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="card-title">Low Stock</h5>
+                        <h2 class="display-4">{{ low_stock_medicines }}</h2>
+                    </div>
+                    <i class="fas fa-exclamation-triangle fa-3x"></i>
+                </div>
+            </div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <a href="{{ url_for('low_stock') }}" class="text-white text-decoration-none">View Details</a>
+                <i class="fas fa-angle-right text-white"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="fas fa-exchange-alt me-2"></i>Recent Transactions</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_transactions %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Medicine</th>
+                                <th>Type</th>
+                                <th>Quantity</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for transaction in recent_transactions %}
+                            <tr>
+                                <td>{{ transaction.medicine_name }}</td>
+                                <td>
+                                    {% if transaction.transaction_type == 'add' %}
+                                    <span class="badge bg-success">Add</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Sold</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ transaction.quantity }}</td>
+                                <td>{{ transaction.transaction_date }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No recent transactions found.</p>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('transactions') }}" class="btn btn-sm btn-primary">View All Transactions</a>
+            </div>
+        </div>
+    </div>
+
+    
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="fas fa-calendar-times me-2"></i>Expiring Soon (30 days)</h5>
+            </div>
+            <div class="card-body">
+                {% if expiring_soon %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Medicine</th>
+                                <th>Quantity</th>
+                                <th>Expiry Date</th>
+                                <th>Days Left</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for medicine in expiring_soon %}
+                            <tr>
+                                <td>{{ medicine.name }}</td>
+                                <td>{{ medicine.quantity }}</td>
+                                <td>{{ medicine.expiry_date }}</td>
+                                <td>
+                                    {% if medicine.days_left is defined %}
+                                        {% if medicine.days_left <= 0 %}
+                                        <span class="badge bg-danger">Expired</span>
+                                        {% elif medicine.days_left <= 7 %}
+                                        <span class="badge bg-danger">{{ medicine.days_left }} days</span>
+                                        {% elif medicine.days_left <= 15 %}
+                                        <span class="badge bg-warning text-dark">{{ medicine.days_left }} days</span>
+                                        {% else %}
+                                        <span class="badge bg-info text-dark">{{ medicine.days_left }} days</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="badge bg-secondary">Unknown</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">No medicines expiring soon.</p>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('expiring') }}" class="btn btn-sm btn-primary">View All Expiring Medicines</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}

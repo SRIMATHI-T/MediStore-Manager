@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Suppliers - Medicine Stock Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="display-5">
+        <i class="fas fa-truck me-2"></i>Suppliers
+    </h1>
+    <a href="{{ url_for('add_supplier') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-1"></i>Add Supplier
+    </a>
+</div>
+
+{% if suppliers %}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Contact Person</th>
+                        <th>Phone</th>
+                        <th>Email</th>
+                        <th>Address</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for supplier in suppliers %}
+                    <tr>
+                        <td>{{ supplier.name }}</td>
+                        <td>{{ supplier.contact_person or 'N/A' }}</td>
+                        <td>{{ supplier.phone or 'N/A' }}</td>
+                        <td>{{ supplier.email or 'N/A' }}</td>
+                        <td>{{ supplier.address or 'N/A' }}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('edit_supplier', id=supplier.id) }}" class="btn btn-outline-primary" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button type="button" class="btn btn-outline-danger" title="Delete" 
+                                        data-bs-toggle="modal" data-bs-target="#deleteModal{{ supplier.id }}">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            
+                            
+                            <div class="modal fade" id="deleteModal{{ supplier.id }}" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Confirm Delete</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to delete supplier <strong>{{ supplier.name }}</strong>?
+                                            This action cannot be undone.
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                            <form action="{{ url_for('delete_supplier', id=supplier.id) }}" method="post">
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info">
+    <i class="fas fa-info-circle me-2"></i>No suppliers found. <a href="{{ url_for('add_supplier') }}">Add your first supplier</a>.
+</div>
+{% endif %}
+{% endblock %}

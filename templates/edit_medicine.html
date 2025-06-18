@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Medicine - Medicine Stock Management{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-edit me-2"></i>Edit Medicine</h4>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('edit_medicine', id=medicine.id) }}" method="post">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">Medicine Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" value="{{ medicine.name }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="category" class="form-label">Category</label>
+                            <input type="text" class="form-control" id="category" name="category" value="{{ medicine.category }}" list="categories">
+                            <datalist id="categories">
+                                <option value="Tablet">
+                                <option value="Capsule">
+                                <option value="Syrup">
+                                <option value="Injection">
+                                <option value="Cream">
+                                <option value="Ointment">
+                                <option value="Drops">
+                                <option value="Inhaler">
+                                <option value="Suppository">
+                            </datalist>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="2">{{ medicine.description }}</textarea>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <label for="quantity" class="form-label">Quantity <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" min="0" value="{{ medicine.quantity }}" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="unit" class="form-label">Unit</label>
+                            <input type="text" class="form-control" id="unit" name="unit" value="{{ medicine.unit }}" list="units">
+                            <datalist id="units">
+                                <option value="Tablets">
+                                <option value="Capsules">
+                                <option value="Bottles">
+                                <option value="Vials">
+                                <option value="Tubes">
+                                <option value="Strips">
+                                <option value="Boxes">
+                                <option value="Ampoules">
+                            </datalist>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="price" class="form-label">Price</label>
+                            <div class="input-group">
+                                <span class="input-group-text">Rps.</span>
+                                <input type="number" class="form-control" id="price" name="price" min="0" step="0.01" value="{{ medicine.price }}">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="manufacturer" class="form-label">Manufacturer</label>
+                            <input type="text" class="form-control" id="manufacturer" name="manufacturer" value="{{ medicine.manufacturer }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="batch_number" class="form-label">Batch Number</label>
+                            <input type="text" class="form-control" id="batch_number" name="batch_number" value="{{ medicine.batch_number }}">
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="purchase_date" class="form-label">Purchase Date</label>
+                            <input type="date" class="form-control" id="purchase_date" name="purchase_date" value="{{ medicine.purchase_date }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="expiry_date" class="form-label">Expiry Date <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="expiry_date" name="expiry_date" value="{{ medicine.expiry_date }}" required>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('medicines') }}" class="btn btn-secondary me-md-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Update Medicine
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

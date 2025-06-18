@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Update Stock - Medicine Stock Management{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-cubes me-2"></i>Update Stock</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h5>Medicine Details</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Name:</strong> {{ medicine.name }}</p>
+                            <p><strong>Category:</strong> {{ medicine.category or 'N/A' }}</p>
+                        </div>
+                        <div class="col-md-6" data-current-stock="{{ medicine.quantity|default(0) }}">
+                            <p><strong>Current Stock:</strong> {{ medicine.quantity }} {{ medicine.unit or '' }}</p>
+                            <p><strong>Expiry Date:</strong> {{ medicine.expiry_date }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <form action="{{ url_for('update_stock', id=medicine.id) }}" method="post">
+                    <div class="mb-3">
+                        <label for="transaction_type" class="form-label">Transaction Type <span class="text-danger">*</span></label>
+                        <select class="form-select" id="transaction_type" name="transaction_type" required>
+                            <option value="add">Add Stock</option>
+                            <option value="remove">Sold Stock</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="quantity_change" class="form-label">Quantity <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="quantity_change" name="quantity_change" min="1" required>
+                        <div class="form-text" id="stock_warning" style="display: none; color: red;">
+                            Warning: You cannot remove more than the current stock ({{ medicine.quantity }}).
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="2" placeholder="Optional notes about this transaction"></textarea>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('medicines') }}" class="btn btn-secondary me-md-2">Cancel</a>
+                        <button type="submit" class="btn btn-primary" id="submit_btn">
+                            <i class="fas fa-save me-1"></i>Update Stock
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const transactionTypeSelect = document.getElementById('transaction_type');
+        const quantityInput = document.getElementById('quantity_change');
+        const stockWarning = document.getElementById('stock_warning');
+        const submitBtn = document.getElementById('submit_btn');
+        
+        
+        const currentStockElement = document.querySelector('[data-current-stock]');
+        const currentStock = currentStockElement ? parseInt(currentStockElement.getAttribute('data-current-stock')) : 0;
+        
+        function validateQuantity() {
+            if (transactionTypeSelect.value === 'remove') {
+                const inputValue = parseInt(quantityInput.value) || 0;
+                if (inputValue > currentStock) {
+                    stockWarning.style.display = 'block';
+                    submitBtn.disabled = true;
+                } else {
+                    stockWarning.style.display = 'none';
+                    submitBtn.disabled = false;
+                }
+            } else {
+                stockWarning.style.display = 'none';
+                submitBtn.disabled = false;
+            }
+        }
+        
+        transactionTypeSelect.addEventListener('change', validateQuantity);
+        quantityInput.addEventListener('input', validateQuantity);
+        
+    
+        quantityInput.value = 1;
+        validateQuantity();
+    });
+</script>
+{% endblock %}

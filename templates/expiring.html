@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Expiring Medicines - Medicine Stock Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="display-5">
+        <i class="fas fa-calendar-times me-2"></i>Expiring Medicines
+    </h1>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form action="{{ url_for('expiring') }}" method="get" class="row g-3 align-items-end">
+            <div class="col-md-6">
+                <label for="days" class="form-label">Show medicines expiring within:</label>
+                <div class="input-group">
+                    <input type="number" class="form-control" id="days" name="days" value="{{ days }}" min="1" max="365">
+                    <span class="input-group-text">days</span>
+                    <button type="submit" class="btn btn-primary">Apply</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if medicines %}
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Quantity</th>
+                        <th>Batch Number</th>
+                        <th>Expiry Date</th>
+                        <th>Days Left</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for medicine in medicines %}
+                    <tr class="{% if medicine.days_left <= 0 %}table-danger{% elif medicine.days_left <= 7 %}table-warning{% elif medicine.days_left <= 30 %}table-info{% endif %}">
+                        <td>{{ medicine.name }}</td>
+                        <td>{{ medicine.category or 'N/A' }}</td>
+                        <td>{{ medicine.quantity }} {{ medicine.unit or '' }}</td>
+                        <td>{{ medicine.batch_number or 'N/A' }}</td>
+                        <td>{{ medicine.expiry_date }}</td>
+                        <td>
+                            {% if medicine.days_left is defined %}
+                                {% if medicine.days_left <= 0 %}
+                                <span class="badge bg-danger">Expired</span>
+                                {% elif medicine.days_left <= 7 %}
+                                <span class="badge bg-danger">{{ medicine.days_left }} days</span>
+                                {% elif medicine.days_left <= 15 %}
+                                <span class="badge bg-warning text-dark">{{ medicine.days_left }} days</span>
+                                {% else %}
+                                <span class="badge bg-info text-dark">{{ medicine.days_left }} days</span>
+                                {% endif %}
+                            {% else %}
+                                <span class="badge bg-secondary">Unknown</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('edit_medicine', id=medicine.id) }}" class="btn btn-outline-primary" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{{ url_for('update_stock', id=medicine.id) }}" class="btn btn-outline-success" title="Update Stock">
+                                    <i class="fas fa-cubes"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-success">
+    <i class="fas fa-check-circle me-2"></i>Great! No medicines are expiring within {{ days }} days.
+</div>
+{% endif %}
+{% endblock %}
