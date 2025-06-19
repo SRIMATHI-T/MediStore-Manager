@@ -19,6 +19,14 @@ A comprehensive web application for managing medicine inventory, tracking expiry
 - **Discount Offers**: Automatically calculate recommended discounts for soon-to-expire medicines
 - **Search Functionality**: Quickly find medicines by name, description, category, or manufacturer
 
+##  View the page
+
+![T.php](med1.jpg)
+
+![T.php](gitpro-2.jpg)
+
+![T.php](gitpro-3.jpg)
+
 ## 💻 Technologies Used
 
 - **Backend**: Python, Flask
