@@ -1,4 +1,4 @@
-#MediStore Manager
+# MediStore Manager
 
 A comprehensive web application for managing medicine inventory, tracking expiry dates, and optimizing stock levels in pharmacies and healthcare facilities.
 
