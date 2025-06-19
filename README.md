@@ -23,9 +23,16 @@ A comprehensive web application for managing medicine inventory, tracking expiry
 
 ![T.php](med1.jpg)
 
-![T.php](gitpro-2.jpg)
+![T.php](med2.jpg)
 
-![T.php](gitpro-3.jpg)
+![T.php](med3.jpg)
+
+![T.php](med4.jpg)
+
+![T.php](med5.jpg)
+
+![T.php](med6.jpg)
+
 
 ## 💻 Technologies Used
 
